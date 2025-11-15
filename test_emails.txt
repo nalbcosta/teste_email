@@ -1,0 +1,80 @@
+# Emails de Teste para Classificação
+
+## Emails Produtivos (requerem ação/resposta)
+
+### Email 1: Solicitação de Status
+Assunto: Atualização sobre minha solicitação de empréstimo
+
+Prezado suporte,
+
+Gostaria de saber o status da minha solicitação de empréstimo pessoal feita há duas semanas. O número do protocolo é 123456. Por favor, me informe se há alguma documentação pendente ou se posso aguardar a aprovação.
+
+Atenciosamente,
+João Silva
+
+---
+
+### Email 2: Relato de Erro no Sistema
+Assunto: Problema ao acessar conta online
+
+Olá equipe técnica,
+
+Estou enfrentando um erro ao tentar logar no sistema bancário online. Aparece a mensagem "Erro 500 - Servidor interno". Já tentei em diferentes navegadores e dispositivos. Podem verificar e resolver?
+
+Obrigado,
+Maria Oliveira
+
+---
+
+### Email 3: Dúvida sobre Suporte
+Assunto: Ajuda com cartão de crédito
+
+Bom dia,
+
+Tenho uma dúvida sobre o limite do meu cartão de crédito. Recentemente fiz uma compra internacional e gostaria de confirmar se o valor foi convertido corretamente. Como posso verificar isso?
+
+Grato,
+Carlos Santos
+
+---
+
+## Emails Improdutivos (não requerem ação imediata)
+
+### Email 4: Feliz Natal
+Assunto: Feliz Natal!
+
+Prezados colegas,
+
+Gostaria de desejar a todos um Feliz Natal e um Ano Novo repleto de sucesso e prosperidade. Que 2025 seja um ano de conquistas para nossa empresa.
+
+Atenciosamente,
+Ana Costa
+
+---
+
+### Email 5: Agradecimento
+Assunto: Obrigado pelo atendimento
+
+Olá,
+
+Queria agradecer pelo atendimento rápido na resolução da minha dúvida sobre extrato bancário. O suporte foi excelente.
+
+Obrigado novamente,
+Pedro Lima
+
+---
+
+### Email 6: Parabéns
+Assunto: Parabéns pela promoção!
+
+Parabéns pela promoção! Você merece muito. Continue assim!
+
+Abraços,
+Fernanda Rocha
+
+---
+
+## Como Usar
+- Copie e cole o conteúdo de cada email no campo de texto do app.
+- Ou salve este arquivo como .txt e faça upload para testar o parser de arquivos.
+- Teste também salvando apenas um email por arquivo para uploads individuais.

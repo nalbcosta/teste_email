@@ -52,10 +52,11 @@
     history.forEach((h, idx)=>{
       const li = document.createElement('li');
       const badgeColor = h.classification === 'Produtivo' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-700 dark:text-emerald-100' : 'bg-orange-100 text-orange-700 dark:bg-orange-700 dark:text-orange-100';
+      const countLabel = h.count > 1 ? ` (${h.count} emails)` : '';
       li.className = 'p-3 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col gap-1';
       li.innerHTML = `
         <div class="flex justify-between items-center">
-          <span class="text-xs font-medium px-2 py-1 rounded ${badgeColor}">${h.classification}</span>
+          <span class="text-xs font-medium px-2 py-1 rounded ${badgeColor}">${h.classification}${countLabel}</span>
           <span class="text-[10px] text-gray-400">#${history.length - idx}</span>
         </div>
         <p class="text-xs line-clamp-3">${h.rawSnippet}</p>
@@ -108,22 +109,25 @@
     try{
       const r = await fetch('/process', { method: 'POST', body: fd });
       const data = await r.json();
+      
       if(data.error){
         showError(data.error);
         suggestedResponse.innerHTML = '<em>Falha ao processar.</em>';
         return;
       }
-      // classification badge
-      const isProd = data.classification === 'Produtivo';
-      const badgeBase = 'inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full shadow';
-      const badgeColor = isProd ? 'bg-emerald-600 text-white dark:bg-emerald-500' : 'bg-orange-600 text-white dark:bg-orange-500';
-      classificationBadge.className = badgeBase + ' ' + badgeColor;
-      classificationBadge.innerHTML = isProd ? 'Produtivo' : 'Improdutivo';
-      suggestedResponse.innerHTML = `<div class="space-y-2"><h3 class="text-sm font-semibold">Resposta sugerida</h3><pre class="whitespace-pre-wrap text-xs bg-gray-100 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-700">${data.suggested_response}</pre></div>`;
+      
+      // Verificar se é múltiplo ou único
+      if(data.is_multiple && data.items){
+        renderMultipleResults(data);
+      } else {
+        renderSingleResult(data);
+      }
+      
       // history
       addToHistory({
         classification: data.classification,
-        rawSnippet: (txt || (file ? file.name : '')).slice(0,160) + '…'
+        rawSnippet: (txt || (file ? file.name : '')).slice(0,160) + '…',
+        count: data.items ? data.items.length : 1
       });
     }catch(err){
       showError('Erro de rede ou servidor: ' + err.message);
@@ -132,6 +136,44 @@
       setLoading(false);
     }
   });
+
+  function renderSingleResult(data){
+    const isProd = data.classification === 'Produtivo';
+    const badgeBase = 'inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full shadow';
+    const badgeColor = isProd ? 'bg-emerald-600 text-white dark:bg-emerald-500' : 'bg-orange-600 text-white dark:bg-orange-500';
+    classificationBadge.className = badgeBase + ' ' + badgeColor;
+    classificationBadge.innerHTML = isProd ? 'Produtivo' : 'Improdutivo';
+    suggestedResponse.innerHTML = `<div class="space-y-2"><h3 class="text-sm font-semibold">Resposta sugerida</h3><pre class="whitespace-pre-wrap text-xs bg-gray-100 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-700">${data.suggested_response}</pre></div>`;
+  }
+
+  function renderMultipleResults(data){
+    const isProd = data.classification === 'Produtivo';
+    const badgeBase = 'inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full shadow';
+    const badgeColor = isProd ? 'bg-emerald-600 text-white dark:bg-emerald-500' : 'bg-orange-600 text-white dark:bg-orange-500';
+    classificationBadge.className = badgeBase + ' ' + badgeColor;
+    classificationBadge.innerHTML = `${data.classification} (${data.items.length} emails)`;
+    
+    let html = '<div class="space-y-3">';
+    data.items.forEach((item) => {
+      const itemBadge = item.classification === 'Produtivo' 
+        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-700 dark:text-emerald-100'
+        : 'bg-orange-100 text-orange-700 dark:bg-orange-700 dark:text-orange-100';
+      html += `
+        <details class="border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
+          <summary class="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between">
+            <span class="text-sm font-medium">Email ${item.id}</span>
+            <span class="text-xs px-2 py-1 rounded ${itemBadge}">${item.classification}</span>
+          </summary>
+          <div class="p-3 border-t border-gray-200 dark:border-gray-700">
+            <h4 class="text-xs font-semibold mb-2">Resposta sugerida:</h4>
+            <pre class="whitespace-pre-wrap text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">${item.suggested_response}</pre>
+          </div>
+        </details>
+      `;
+    });
+    html += '</div>';
+    suggestedResponse.innerHTML = html;
+  }
 
   // initial
   updateCharCount();

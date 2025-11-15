@@ -8,10 +8,8 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Iniciando aplicação...")
     ensure_nltk_resources()
     yield
-    print("Finalizando aplicação...")
 
 
 app = FastAPI(lifespan=lifespan)

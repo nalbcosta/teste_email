@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Environments and secrets
+.env
+.env.*
+secrets/
+secrets.json
+*.key
+*.pem
+*.crt
+
+# Byte-compiled / C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.installed.cfg
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.nox/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Mypy / type-checkers
+.mypy_cache/
+.pyre/
+.pyright/
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Docker / Compose overrides
+docker-compose.override.yml
+
+# Node / front-end build artifacts (if present)
+node_modules/
+dist/
+build/
+npm-debug.log
+
+# Misc / OS
+*.bak
+*.tmp

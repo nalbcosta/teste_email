@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, Form, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from app.utils.file_parser import read_file_content
 from app.services.nlp_service import preprocess_text, ensure_nltk_resources
 from app.services.aI_service import classify_and_respond
@@ -14,7 +15,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# monta a pasta static (está na raiz do projeto)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
@@ -24,6 +24,18 @@ def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/health")
+async def health_check():
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "service": "email-classifier",
+            "version": "1.0.0"
+        },
+        status_code=200
+    )
+
+
 @app.post("/process")
 async def process_email(
     file: UploadFile = File(None),
@@ -31,7 +43,6 @@ async def process_email(
 ):
     content = ""
     if file is not None:
-        # usar util para ler pdf/txt
         content = read_file_content(file)
     elif text_input:
         content = text_input

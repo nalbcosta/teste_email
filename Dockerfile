@@ -13,6 +13,7 @@ WORKDIR /app
 
 # Instalar dependências do sistema necessárias
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar e instalar dependências Python
@@ -38,8 +39,8 @@ ENV PORT=8000
 EXPOSE 8000
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Comando de inicialização com variável PORT dinâmica
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

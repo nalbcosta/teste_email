@@ -4,6 +4,8 @@ FROM node:18-slim AS tailwind-builder
 WORKDIR /app
 COPY package*.json tailwind.config.js ./
 COPY tailwind ./tailwind
+COPY app/templates ./app/templates
+COPY static ./static
 RUN npm ci && npm run tailwind:build
 
 # Imagem final otimizada

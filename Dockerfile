@@ -27,20 +27,19 @@ RUN python -c "import nltk; nltk.download('stopwords'); nltk.download('rslp')"
 COPY app ./app
 COPY static ./static
 COPY test_emails.txt ./
+COPY start.sh ./
 
 # Copiar CSS compilado do Tailwind
 COPY --from=tailwind-builder /app/static/css/app.css ./static/css/app.css
 
+# Dar permissão de execução ao script
+RUN chmod +x start.sh
+
 # Variáveis de ambiente
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
 
 # Expor porta
 EXPOSE 8000
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
-
 # Comando de inicialização com variável PORT dinâmica
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD ["./start.sh"]

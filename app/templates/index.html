@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Classificador de Emails</title>
+			<!-- Em desenvolvimento você pode usar a CDN de Tailwind. Em produção usamos CSS gerado em /static/css/app.css -->
+			<link rel="stylesheet" href="/static/css/app.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	</head>
+	<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans">
+		<div class="min-h-full flex flex-col">
+			<header class="border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur sticky top-0 z-10">
+				<div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white font-bold">AI</div>
+						<div>
+							<h1 class="text-lg font-semibold">Classificador de Emails</h1>
+							<p class="text-xs text-gray-500 dark:text-gray-400">Produtivo vs Improdutivo com resposta automática</p>
+						</div>
+					</div>
+					<button id="toggleTheme" class="text-sm px-3 py-1.5 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+						🌙/☀️
+					</button>
+				</div>
+			</header>
+			<main class="flex-1 max-w-6xl mx-auto w-full px-6 py-8">
+				<div class="grid lg:grid-cols-3 gap-8">
+					<!-- Formulário -->
+					<section class="lg:col-span-2 space-y-6">
+						<div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+							<h2 class="text-base font-semibold mb-4 flex items-center gap-2"><span class="inline-block w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>Entrada</h2>
+							<form id="emailForm" class="space-y-5" enctype="multipart/form-data">
+								<div class="space-y-2">
+									<label for="file" class="text-sm font-medium">Upload (.txt ou .pdf)</label>
+									<input type="file" id="file" name="file" accept=".txt,.pdf" class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-600 file:text-white hover:file:bg-teal-700 cursor-pointer" />
+									<p class="text-xs text-gray-500">O arquivo será convertido para texto automaticamente.</p>
+								</div>
+								<div class="space-y-2">
+									<label for="text_input" class="text-sm font-medium">Ou cole o conteúdo do email</label>
+									<textarea id="text_input" name="text_input" rows="10" placeholder="Cole o corpo do email aqui..." class="resize-y w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+									<div class="flex justify-between text-xs text-gray-500"><span id="charCount">0 caracteres</span><span>Dica: colar texto remove PDF necessário.</span></div>
+								</div>
+								<div class="flex items-center gap-3 flex-wrap">
+									<button type="submit" class="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+										Processar
+									</button>
+									<button type="reset" id="resetBtn" class="text-sm px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">Limpar</button>
+								</div>
+								<div id="formError" class="hidden text-sm rounded-md bg-red-50 border border-red-200 text-red-700 px-3 py-2"></div>
+							</form>
+						</div>
+						<div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+							<h2 class="text-base font-semibold mb-4">Histórico</h2>
+							<ul id="historyList" class="space-y-3 text-sm" aria-live="polite"></ul>
+							<p id="emptyHistory" class="text-xs text-gray-500">Nenhum processamento ainda.</p>
+						</div>
+					</section>
+					<!-- Resultado -->
+					<aside class="space-y-6">
+						<div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl p-6 sticky top-24">
+							<h2 class="text-base font-semibold mb-4">Resultado</h2>
+							<div id="resultWrapper" class="space-y-4">
+								<div id="classificationBadge" class="hidden"></div>
+								<div id="suggestedResponse" class="text-sm text-gray-700 dark:text-gray-300">
+									<em>Sem resultados ainda. Envie um email para análise.</em>
+								</div>
+							</div>
+						</div>
+					</aside>
+				</div>
+			</main>
+			<footer class="mt-12 py-8 text-center text-xs text-gray-500 dark:text-gray-500">&copy; <span id="year"></span> Classificador de Emails • Feito com FastAPI + Tailwind</footer>
+		</div>
+
+		<!-- Overlay Loading -->
+		<div id="loadingOverlay" class="hidden fixed inset-0 bg-white/60 dark:bg-gray-900/60 backdrop-blur flex items-center justify-center z-50">
+			<div class="flex flex-col items-center gap-4">
+				<div class="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+				<p class="text-sm font-medium">Processando...</p>
+			</div>
+		</div>
+
+		<script src="/static/js/app.js"></script>
+	</body>
+</html>
+

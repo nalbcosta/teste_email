@@ -1,0 +1,13 @@
+{
+  "name": "teste_email_frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tailwind:build": "tailwindcss -c tailwind.config.js -i ./tailwind/input.css -o ./static/css/app.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.10",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.19"
+  }
+}
